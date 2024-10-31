@@ -79,12 +79,16 @@ def brpc_workspace():
         path = "/usr",
         build_file = "//:openssl.BUILD",
     )
-
+    
     http_archive(
         name = "com_github_gflags_gflags",
-        sha256 = "a8263376b409900dd46830e4e34803a170484707327854cc252fc5865275a57d",
         strip_prefix = "gflags-46f73f88b18aee341538c0dfc22b1710a6abedef",
         url = "https://github.com/gflags/gflags/archive/46f73f88b18aee341538c0dfc22b1710a6abedef.tar.gz",
+    )
+
+    bind(
+        name = "gflags",
+        actual = "@com_github_gflags_gflags//:gflags",
     )
 
     http_archive(
