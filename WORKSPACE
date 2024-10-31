@@ -67,9 +67,9 @@ new_local_repository(
     build_file = "depBUILD/zlib.BUILD",
     path = "/usr",
 )
-git_repository(
+http_archive(
     name = "brpc",
-    remote = "https://gitee.com/baidu/BRPC.git",
-    branch = "master"
+    strip_prefix = "brpc-1.3.0",
+    url = "https://github.com/apache/brpc/archive/refs/tags/1.3.0.tar.gz"
 )
 
