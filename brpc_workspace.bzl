@@ -90,8 +90,8 @@ def brpc_workspace():
 
     http_archive(
         name = "apache_brpc",
-        strip_prefix = "brpc-1.3.0",
-        url = "https://github.com/apache/brpc/archive/refs/tags/1.3.0.tar.gz"
+        strip_prefix = "brpc-1.10.0",
+        url = "https://github.com/apache/brpc/archive/refs/tags/1.10.0.tar.gz"
     )
 
 
