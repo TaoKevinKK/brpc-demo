@@ -82,10 +82,10 @@ def brpc_workspace():
 
     http_archive(
         name = "com_github_gflags_gflags",
-        url = "https://github.com/gflags/gflags/archive/e171aa2d15ed9eb17054558e0b3a6a413bb01067.tar.gz",
-        sha256 = "b20f58e7f210ceb0e768eb1476073d0748af9b19dfbbf53f4fd16e3fb49c5ac8",
+        sha256 = "a8263376b409900dd46830e4e34803a170484707327854cc252fc5865275a57d",
+        strip_prefix = "gflags-46f73f88b18aee341538c0dfc22b1710a6abedef",
+        url = "https://github.com/gflags/gflags/archive/46f73f88b18aee341538c0dfc22b1710a6abedef.tar.gz",
     )
-
 
     http_archive(
         name = "apache_brpc",
