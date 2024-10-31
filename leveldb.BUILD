@@ -94,5 +94,4 @@ cc_library(
         ":darwin": ["OS_MACOSX"],
         "//conditions:default": [],
     }),
-    visibility = ["//visibility:public"],
 )
