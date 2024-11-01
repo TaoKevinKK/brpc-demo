@@ -83,8 +83,8 @@ def brpc_workspace():
     http_archive(
         name = "com_github_gflags_gflags",
         build_file = "//:gflags.BUILD",
-        strip_prefix = "gflags-2.2.2",
-        url = "https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz",
+        strip_prefix = "gflags-2.2.3",
+        url = "https://github.com/gflags/gflags/archive/refs/tags/v2.2.3.tar.gz",
     )
 
     http_archive(
