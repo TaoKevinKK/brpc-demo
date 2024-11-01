@@ -80,11 +80,10 @@ def brpc_workspace():
         build_file = "//:openssl.BUILD",
     )
 
-    http_archive(
+    git_repository(
         name = "com_github_gflags_gflags",
-        build_file = "//:gflags.BUILD",
-        strip_prefix = "gflags-2.2.2",
-        url = "https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz",
+        commit = "3c4399ba468e71947ca8945daa4dc274007c5e9b",
+        remote = "https://github.com/gflags/gflags.git",
     )
 
     http_archive(
