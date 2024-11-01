@@ -6,7 +6,6 @@ cc_library(
         "src/gflags_reporting.cc",
         "src/mutex.h",
         "src/util.h",
-        ":gflags_completions_h",
         ":gflags_declare_h",
         ":gflags_h",
         ":includes",
