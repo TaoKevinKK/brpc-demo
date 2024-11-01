@@ -6,7 +6,6 @@ cc_library(
         "src/gflags_reporting.cc",
         "src/mutex.h",
         "src/util.h",
-        ":includes",
     ],
     hdrs = ["gflags.h"],
     copts = [
