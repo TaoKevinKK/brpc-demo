@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//bazel:ray.bzl", "COPTS")
 
 # 运行指定的命令
 COPTS = [
