@@ -88,6 +88,13 @@ def brpc_workspace():
     )
 
     http_archive(
+        name = "com_github_google_glog",
+        build_file = "//:glog.BUILD",
+        strip_prefix = "glog-a6a166db069520dbbd653c97c2e5b12e08a8bb26",
+        url = "https://github.com/google/glog/archive/a6a166db069520dbbd653c97c2e5b12e08a8bb26.tar.gz",
+    )
+
+    http_archive(
         name = "com_github_fmtlib_fmt",
         sha256 = "4c0741e10183f75d7d6f730b8708a99b329b2f942dad5a9da3385ab92bb4a15c",
         strip_prefix = "fmt-5.3.0",
