@@ -12,7 +12,6 @@
 #include <thread>
 
 #include "config.h"
-#include "continue_streaming.h"
 #include "proto/echo.pb.h"
 #include "util.h"
 
@@ -34,16 +33,6 @@ class Client {v
 
   void runReqBench(std::unique_ptr<example::EchoService_Stub> stub,
                    std::chrono::milliseconds benchmark_time = kDefaultBenchmarkTime) {
-    if (config_->use_continue_streaming) {
-      ContinueStreamingSender sender(stub.get(), config_->req_size);
-      sender.setStreamingOption(config_->continue_stream_messages_in_batch, config_->continue_stream_max_buf_size);
-      sender.run_continue_streaming(benchmark_time);
-      real_benchmark_time_s_ = sender.getRealBenchTime();
-      sent_bytes_ = sender.getSentBytes();
-
-      done_call_back_func_();
-      return;
-    }
     sent_bytes_ = 0;
     stub_ = std::move(stub);
     generate_data(req_size_);

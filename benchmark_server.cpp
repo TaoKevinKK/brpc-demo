@@ -105,25 +105,6 @@ class EchoServiceImpl : public example::EchoService {
       CHECK_EQ(std::hash<std::string>{}(cntl->request_attachment().to_string()), request->hash())
           << fmt::format("QWQ request attachment size: {}", cntl->request_attachment().size());
     }
-
-    if (request->has_continue_streaming_size()) {
-      brpc::StreamOptions stream_options;
-      auto receiver = new ContinueStreamRecvHandler(*request);
-      stream_options.handler = receiver;
-      if (request->has_streaming_messages_in_batch()) {
-        stream_options.messages_in_batch = request->streaming_messages_in_batch();
-      }
-      if (request->has_streaming_max_buf_size()) {
-        stream_options.max_buf_size = request->streaming_max_buf_size();
-      }
-
-      brpc::StreamId stream_id{brpc::INVALID_STREAM_ID};
-      if (brpc::StreamAccept(&stream_id, *cntl, &stream_options) != 0) {
-        cntl->SetFailed("Fail to accept stream");
-        return;
-      }
-    }
-
     // Fill in respone
     response->set_hash(123);
   }
