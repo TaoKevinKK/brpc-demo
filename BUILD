@@ -64,10 +64,14 @@ cc_proto_library(
 cc_library(
     name = "common_headers",
     hdrs = glob([
-        "*.h",
+        "brpc_client_sync.h",
+        "continue_streaming.h",
+        "util.h",
+        "config.h",
     ]),
     visibility = ["//visibility:public"],
 )
+
 
 cc_binary(
     name = "benchmark_server",
