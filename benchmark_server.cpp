@@ -15,37 +15,24 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// A server to receive HttpRequest and send back HttpResponse.
+// A server to receive EchoRequest and send back EchoResponse.
 
-#include <gflags/gflags.h>
-#include <butil/logging.h>
 #include <brpc/server.h>
 #include <brpc/stream.h>
+#include <butil/logging.h>
 #include <butil/string_printf.h>
+#include <gflags/gflags.h>
 
 #include <utility>
-
-#include "proto/echo.pb.h"
+#include <fmt/core.h>
 #include "config.h"
 #include "continue_streaming.h"
+#include "proto/echo.pb.h"
 #include "util.h"
-
-DEFINE_int32(port, 8010, "TCP Port of this server");
-DEFINE_int32(idle_timeout_s, -1, "Connection will be closed if there is no "
-             "read/write operations during the last `idle_timeout_s'");
-DEFINE_int32(logoff_ms, 2000, "Maximum duration of server's LOGOFF state "
-             "(waiting for client to close connection before server stops)");
-
-DEFINE_string(certificate, "/root/brpc-demo/cert.pem", "Certificate file path to enable SSL");
-DEFINE_string(private_key, "/root/brpc-demo/key.pem", "Private key file path to enable SSL");
-DEFINE_string(ciphers, "", "Cipher suite used for SSL connections");
-
-namespace example {
-
 
 class RepeaterStreamReceiver : public brpc::StreamInputHandler {
  public:
-  explicit RepeaterStreamReceiver(EchoRequest request) : request_(std::move(request)) {
+  explicit RepeaterStreamReceiver(example::EchoRequest request) : request_(std::move(request)) {
     data_.reserve(request_.streaming_size());
   }
 
@@ -79,17 +66,16 @@ class RepeaterStreamReceiver : public brpc::StreamInputHandler {
   std::string data_;
   int seq_{0};
   // brpc::StreamId stream_id_{brpc::INVALID_STREAM_ID};
-  const EchoRequest request_;
+  const example::EchoRequest request_;
 };
 
-
-// Service with static path.
-class EchoServiceImpl : public EchoService {
-public:
+// Your implementation of example::EchoService
+class EchoServiceImpl : public example::EchoService {
+ public:
   explicit EchoServiceImpl(BenchmarkConfig config) : config_(std::move(config)) {}
 
-  void Echo(google::protobuf::RpcController *cntl_base, const EchoRequest *request,
-            EchoResponse *response, google::protobuf::Closure *done) override {
+  void Echo(google::protobuf::RpcController *cntl_base, const example::EchoRequest *request,
+            example::EchoResponse *response, google::protobuf::Closure *done) override {
     brpc::ClosureGuard done_guard(done);
     auto *cntl = static_cast<brpc::Controller *>(cntl_base);
 
@@ -142,8 +128,8 @@ public:
     response->set_hash(123);
   }
 
-  void AskEcho(google::protobuf::RpcController *cntl_base, const EchoRequest *request,
-               EchoResponse *response, google::protobuf::Closure *done) override {
+  void AskEcho(google::protobuf::RpcController *cntl_base, const example::EchoRequest *request,
+               example::EchoResponse *response, google::protobuf::Closure *done) override {
     brpc::ClosureGuard done_guard(done);
     auto *cntl = static_cast<brpc::Controller *>(cntl_base);
 
@@ -169,7 +155,6 @@ public:
  private:
   BenchmarkConfig config_;
 };
-
 
 class Server {
  public:
@@ -205,12 +190,13 @@ class Server {
   EchoServiceImpl echo_service_impl_;
 };
 
-}  // namespace example
+int main(int argc, char *argv[]) {
+  auto config = parseCommandLine(argc, argv);
 
-int main(int argc, char* argv[]) {
-    auto config = GFLAGS_NS::ParseCommandLineFlags(&argc, &argv, true);
-    Server server(config);
-    server.init();
-    server.join();
-    return 0;
+  Server s1(config);
+  s1.init();
+
+  s1.join();
+
+  return 0;
 }

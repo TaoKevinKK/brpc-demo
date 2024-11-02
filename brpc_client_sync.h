@@ -16,7 +16,7 @@
 #include "proto/echo.pb.h"
 #include "util.h"
 
-class Client {
+class Client {v
   static constexpr auto kDefaultBenchmarkTime = std::chrono::milliseconds(1000);
   static constexpr auto kBaseProroSize = 12;
 

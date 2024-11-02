@@ -64,6 +64,12 @@ cc_binary(
     srcs = [
         "benchmark_server.cpp",
     ],
+    hdrs = [
+        "brpc_client_sync.h",
+        "continue_streaming.h",
+        "util.h",
+        "config.h",
+    ],
     deps = [
         ":cc_c++_echo_proto",
         "@apache_brpc//:brpc",
@@ -78,6 +84,12 @@ cc_binary(
     name = "benchmark_client",
     srcs = [
         "benchmark_client.cpp",
+    ],
+    hdrs = [
+        "brpc_client_sync.h",
+        "continue_streaming.h",
+        "util.h",
+        "config.h",
     ],
     deps = [
         ":cc_c++_echo_proto",
