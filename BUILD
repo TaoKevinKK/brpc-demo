@@ -60,19 +60,23 @@ cc_proto_library(
     ],
 )
 
+# headers/BUILD
+cc_library(
+    name = "common_headers",
+    hdrs = glob([
+        "*.h",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
 cc_binary(
     name = "benchmark_server",
     srcs = [
         "benchmark_server.cpp",
     ],
-   hdrs = glob([
-        "brpc_client_sync.h",
-        "continue_streaming.h",
-        "util.h",
-        "config.h",
-    ]),
     deps = [
         ":cc_c++_echo_proto",
+        ":common_headers",
         "@apache_brpc//:brpc",
         "@com_github_fmtlib_fmt//:fmtlib",
         "@com_github_google_glog//:glog",
@@ -86,14 +90,9 @@ cc_binary(
     srcs = [
         "benchmark_client.cpp",
     ],
-    hdrs = glob([
-        "brpc_client_sync.h",
-        "continue_streaming.h",
-        "util.h",
-        "config.h",
-    ]),
     deps = [
         ":cc_c++_echo_proto",
+        ":common_headers",
         "@apache_brpc//:brpc",
         "@com_github_fmtlib_fmt//:fmtlib",
         "@com_github_google_glog//:glog",
