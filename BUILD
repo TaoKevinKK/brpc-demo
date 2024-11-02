@@ -53,9 +53,6 @@ cc_binary(
     deps = [
         ":cc_c++_http_proto",
         "@apache_brpc//:brpc",
-        "@apache_brpc//:bthread",
-        "@apache_brpc//:bvar",
-        "@apache_brpc//:butil",
     ],
     copts = COPTS,
 )
