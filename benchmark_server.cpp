@@ -26,7 +26,6 @@
 #include <utility>
 #include <fmt/core.h>
 #include "config.h"
-#include "continue_streaming.h"
 #include "proto/echo.pb.h"
 #include "util.h"
 

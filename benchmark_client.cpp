@@ -17,7 +17,6 @@
 
 // A client sending requests to server in parallel by multiple threads.
 
-#include <brpc/parallel_channel.h>
 #include <brpc/server.h>
 #include <bthread/bthread.h>
 #include <butil/macros.h>
@@ -51,52 +50,18 @@ class ClientBenchmarker {
     }
     channel_options.max_retry = config_.rpc_max_retry;
     channel_options.timeout_ms = config_.rpc_timeout_ms;
-
-    if (config_.use_parallel_channel) {
-      num_channel_ = config_.parallel_channel_num;
-      // LOG(INFO) << "use parallel channel, channel_num=" << num_channel_;
-      brpc::ParallelChannelOptions pchan_options;
-      pchan_options.timeout_ms = config_.rpc_timeout_ms;
-      if (p_channel_.Init(&pchan_options) != 0) {
-        LOG(ERROR) << "Fail to init ParallelChannel";
-        exit(-1);
-      }
-
-      for (int i = 0; i < num_channel_; ++i) {
-        auto sub_channel = new brpc::Channel;
-        // Initialize the channel, nullptr means using default options.
-        // options, see `brpc/channel.h'.
-        if (sub_channel->Init(config_.server_addr.c_str(), config_.load_balancer.c_str(), &channel_options) != 0) {
-          LOG(ERROR) << "Fail to initialize sub_channel[" << i << "]";
-          exit(-1);
-        }
-        if (p_channel_.AddChannel(sub_channel, brpc::OWNS_CHANNEL, nullptr, nullptr) != 0) {
-          LOG(ERROR) << "Fail to AddChannel, i=" << i;
-          exit(-1);
-        }
-      }
-      for (int i = 0; i < num_channel_; ++i) {
-        recorder_.sub_channel_latency.emplace_back(std::make_unique<bvar::LatencyRecorder>());
-        recorder_.sub_channel_latency.back()->expose(fmt::format("client_sub_{}", i));
-      }
-    } else {
-      num_channel_ = 1;
-      // LOG(INFO) << "use single channel, channel_num=" << num_channel_;
-      channel_ = std::make_unique<brpc::Channel>();
-      if (channel_->Init(config_.server_addr.c_str(), config_.load_balancer.c_str(), &channel_options) != 0) {
-        LOG(ERROR) << "Fail to initialize channel";
-        exit(-1);
-      }
+    num_channel_ = 1;
+    // LOG(INFO) << "use single channel, channel_num=" << num_channel_;
+    channel_ = std::make_unique<brpc::Channel>();
+    if (channel_->Init(config_.server_addr.c_str(), config_.load_balancer.c_str(), &channel_options) != 0) {
+      LOG(ERROR) << "Fail to initialize channel";
+      exit(-1);
     }
   }
 
   void start(bool is_req_bench = true) {
     auto get_stub = [&]() {
-      if (config_.use_parallel_channel) {
-        return std::make_unique<example::EchoService_Stub>(&p_channel_);
-      } else {
-        return std::make_unique<example::EchoService_Stub>(channel_.get());
-      }
+      return std::make_unique<example::EchoService_Stub>(channel_.get());
     };
     auto benchmark_time = std::chrono::milliseconds(config_.benchmark_time);
 
@@ -167,7 +132,6 @@ class ClientBenchmarker {
   int num_channel_;
   PreformanceRecorder recorder_;
   std::unique_ptr<brpc::Channel> channel_;
-  brpc::ParallelChannel p_channel_;
 
   std::atomic<int> running_cnt_{0};
 
@@ -245,42 +209,6 @@ class ResultArrayOutputer {
   std::vector<double> lantencys;
   std::vector<double> speeds;
 };
-
-void BenchmarkForParallel(std::string target_text, BenchmarkConfig config, int max_parallel = 50) {
-  ResultArrayOutputer outer;
-  target_text = fmt::format("{}_reqsz({})_para(1-{})_streamsz({})_prot({})", target_text, shortTheNum(config.req_size),
-                            max_parallel, shortTheNum(config.single_stream_single_msg_size), config.rpc_protocol);
-  LOG(INFO) << target_text;
-  for (auto parallel = 1; parallel <= max_parallel && !brpc::IsAskedToQuit(); parallel += 4) {
-    config.parallelism = parallel;
-
-    ClientBenchmarker tester(config);
-    tester.init();
-    tester.start();
-
-    tester.join();
-
-    auto &recorder = tester.getRecorder();
-    auto latency_ms = recorder.latency_recorder.latency_percentile(.99) / 1e3;
-    int64_t qps = recorder.latency_recorder.qps();
-
-    auto sent_mbps = tester.getSentBPS() / (1 << 20);
-    // auto recieved_mbps = tester.getRecievedBPS() / (1 << 20);
-
-    LOG(INFO) << fmt::format(
-        "   parallelism {:2d}:   lantency: {:4.2f},  qps: {:4d} "
-        "speed: {:4.2f}MB/S ",
-        parallel, latency_ms, qps, sent_mbps);
-
-    outer.x_axis.emplace_back(parallel);
-    outer.lantencys.emplace_back(latency_ms);
-    outer.speeds.emplace_back(sent_mbps);
-    outer.qps.emplace_back(qps);
-  }
-  LOG(INFO);
-
-  outer.outputCsv(target_text, "parallel");
-}
 
 void BenchmarkForReqSize(std::string target_text, BenchmarkConfig config, int max_size = (1 << 30)) {
   ResultArrayOutputer outer;
@@ -373,25 +301,6 @@ DEFINE_bool(test_sstreaming, false, "");
 
 int main(int argc, char *argv[]) {
   auto config = parseCommandLine(argc, argv);
-
-  if (FLAGS_for_parallelism) {
-    if (FLAGS_test_attachment) {
-      config.use_attachment = true;
-      BenchmarkForParallel("attachment", config);
-      config.use_attachment = false;
-    }
-    if (FLAGS_test_proto) {
-      config.use_proto_bytes = true;
-      BenchmarkForParallel("proto", config);
-      config.use_proto_bytes = false;
-    }
-    if (FLAGS_test_sstreaming) {
-      config.use_single_streaming = true;
-      BenchmarkForParallel("sstreaming", config);
-      config.use_single_streaming = false;
-    }
-  }
-
   if (FLAGS_for_req_size) {
     auto max_req_size = config.req_size;
 
@@ -410,7 +319,6 @@ int main(int argc, char *argv[]) {
       BenchmarkForReqSize("cstreaming", config, max_req_size);
       config.use_continue_streaming = false;
     }
-
     if (FLAGS_test_sstreaming) {
       config.use_single_streaming = true;
       BenchmarkForReqSize("sstreaming", config, max_req_size);
