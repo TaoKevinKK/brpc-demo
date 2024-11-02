@@ -44,14 +44,41 @@ cc_proto_library(
     ],
 )
 
-# 二进制文件的依赖依赖于上面声明的dep
-cc_binary(
-    name = "http_c++_server",
+# pb的编译
+proto_library(
+    name = "c++_echo_proto",
     srcs = [
-        "http_c++_server.cpp",
+        "proto/echo.proto",
+    ],
+)
+# 将pb编译声明为一个依赖dep
+cc_proto_library(
+    name = "cc_c++_echo_proto",
+    deps = [
+        ":c++_echo_proto",
+    ],
+)
+
+cc_binary(
+    name = "benchmark_server",
+    srcs = [
+        "benchmark_server.cpp",
     ],
     deps = [
-        ":cc_c++_http_proto",
+        ":cc_c++_echo_proto",
+        "@apache_brpc//:brpc",
+    ],
+    copts = COPTS,
+)
+
+
+cc_binary(
+    name = "benchmark_client",
+    srcs = [
+        "benchmark_client.cpp",
+    ],
+    deps = [
+        ":cc_c++_echo_proto",
         "@apache_brpc//:brpc",
     ],
     copts = COPTS,
