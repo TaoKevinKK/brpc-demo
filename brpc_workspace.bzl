@@ -88,6 +88,13 @@ def brpc_workspace():
     )
 
     http_archive(
+        name = "com_github_fmtlib_fmt",
+        urls = ["https://github.com/fmtlib/fmt/archive/7.1.3.zip"],
+        strip_prefix = "fmt-7.1.3",
+        sha256 = "5cae7072042b3043e12d53d50ef404bbb76949dad1de368d7f993a15c8c05e65",
+    )
+
+    http_archive(
         name = "apache_brpc",
         strip_prefix = "brpc-1.10.0",
         url = "https://github.com/apache/brpc/archive/refs/tags/1.10.0.tar.gz"
