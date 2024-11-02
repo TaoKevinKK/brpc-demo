@@ -65,7 +65,6 @@ cc_library(
     name = "common_headers",
     hdrs = glob([
         "brpc_client_sync.h",
-        "continue_streaming.h",
         "util.h",
         "config.h",
     ]),
