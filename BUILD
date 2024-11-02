@@ -80,7 +80,7 @@ cc_binary(
     deps = [
         ":cc_c++_echo_proto",
         "@apache_brpc//:brpc",
-        "@com_github_fmtlib_fmt//:fmt",
+        "@com_github_fmtlib_fmt//:fmtlib",
     ],
     copts = COPTS,
 )
