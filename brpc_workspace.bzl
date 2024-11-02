@@ -89,9 +89,10 @@ def brpc_workspace():
 
     http_archive(
         name = "com_github_fmtlib_fmt",
-        urls = ["https://github.com/fmtlib/fmt/archive/7.1.3.zip"],
-        strip_prefix = "fmt-7.1.3",
-        sha256 = "50f2fd9f697f89726ae3c7efe84ae48c9e03158a2958eea496eeaa0fb190adb6",
+        sha256 = "4c0741e10183f75d7d6f730b8708a99b329b2f942dad5a9da3385ab92bb4a15c",
+        strip_prefix = "fmt-5.3.0",
+        urls = ["https://github.com/fmtlib/fmt/releases/download/5.3.0/fmt-5.3.0.zip"],
+        build_file = "//:fmtlib.BUILD",
     )
 
     http_archive(
