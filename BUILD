@@ -67,6 +67,8 @@ cc_binary(
     deps = [
         ":cc_c++_echo_proto",
         "@apache_brpc//:brpc",
+        "@com_github_fmtlib_fmt//:fmtlib",
+        "@com_github_google_glog//:glog",
     ],
     copts = COPTS,
 )
@@ -81,6 +83,7 @@ cc_binary(
         ":cc_c++_echo_proto",
         "@apache_brpc//:brpc",
         "@com_github_fmtlib_fmt//:fmtlib",
+        "@com_github_google_glog//:glog",
     ],
     copts = COPTS,
 )
